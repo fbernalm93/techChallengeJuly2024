@@ -2,11 +2,15 @@ package com.example.bankaccountservice.infrastructure.adapter.out;
 
 import com.example.bankaccountservice.domain.model.Transaction;
 import com.example.bankaccountservice.domain.repository.TransactionRepository;
+import com.example.bankaccountservice.infrastructure.entity.TransactionEntity;
+import com.example.bankaccountservice.infrastructure.mapper.TransactionMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 
 @Repository
 public class JpaTransactionRepository implements TransactionRepository {
@@ -14,19 +18,27 @@ public class JpaTransactionRepository implements TransactionRepository {
     @Autowired
     private SpringDataTransactionRepository springDataTransactionRepository;
 
+    @Autowired
+    private TransactionMapper transactionMapper;
+
     @Override
     public List<Transaction> findAll() {
-        return springDataTransactionRepository.findAll();
+        return springDataTransactionRepository.findAll().stream()
+            .map(transactionMapper::toDomain)
+            .collect(Collectors.toList());
     }
 
     @Override
     public Optional<Transaction> findById(Long id) {
-        return springDataTransactionRepository.findById(id);
+        return springDataTransactionRepository.findById(id)
+            .map(transactionMapper::toDomain);
     }
 
     @Override
     public Transaction save(Transaction transaction) {
-        return springDataTransactionRepository.save(transaction);
+        TransactionEntity transactionEntity = transactionMapper.toEntity(transaction);
+        transactionEntity = springDataTransactionRepository.save(transactionEntity);
+        return transactionMapper.toDomain(transactionEntity);
     }
 
     @Override

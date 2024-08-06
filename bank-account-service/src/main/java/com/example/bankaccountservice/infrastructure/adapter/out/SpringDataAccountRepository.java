@@ -1,7 +1,10 @@
 package com.example.bankaccountservice.infrastructure.adapter.out;
 
-import com.example.bankaccountservice.domain.model.Account;
+import com.example.bankaccountservice.infrastructure.entity.AccountEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface SpringDataAccountRepository extends JpaRepository<Account, Long> {
+import java.util.List;
+
+public interface SpringDataAccountRepository extends JpaRepository<AccountEntity, Long> {
+    List<AccountEntity> findByCustomerId(String customerId);
 }

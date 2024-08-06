@@ -52,22 +52,27 @@ public class AccountService {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
-        if(TransactionType.DEPOSITO == transaction.getTransactionType())
-        {
-            transaction.setBalance(account.getInitialBalance() + transaction.getAmount());
+        double currentBalance = account.getTransactions().isEmpty()
+                ? account.getInitialBalance()
+                : account.getTransactions().get(account.getTransactions().size() - 1).getBalance();
+
+        double newBalance;
+        if (TransactionType.DEPOSITO == transaction.getTransactionType()) {
+            newBalance = currentBalance + transaction.getAmount();
         } else {
-            transaction.setBalance(account.getInitialBalance() - transaction.getAmount());
+            newBalance = currentBalance - transaction.getAmount();
         }
 
-        if (transaction.getBalance()  < 0) {
+        if (newBalance < 0) {
             throw new InsufficientBalanceException("Saldo no disponible");
         }
 
+        transaction.setBalance(newBalance);
         transaction.setDate(LocalDateTime.now());
-
+        transaction.setAccount(account);
         account.addTransaction(transaction);
-
         accountRepository.save(account);
+
         return jpaTransactionRepository.save(transaction);
     }
 
@@ -80,19 +85,19 @@ public class AccountService {
         List<Account> accounts = accountRepository.findByCustomerId(customerId);
         List<AccountReportDTO> accountReportDTOS = accounts.stream().map(account -> {
             List<TransactionReportDTO> transactionReportDTOS = account.getTransactions().stream()
-                    .filter(transaction -> transaction.getDate().isAfter(startDate) && transaction.getDate().isBefore(endDate))
-                    .map(transaction -> new TransactionReportDTO(
-                            transaction.getDate(),
-                            transaction.getTransactionType().name(),
-                            transaction.getAmount(),
-                            transaction.getBalance()))
-                    .collect(Collectors.toList());
+                .filter(transaction -> transaction.getDate().isAfter(startDate) && transaction.getDate().isBefore(endDate))
+                .map(transaction -> new TransactionReportDTO(
+                    transaction.getDate(),
+                    transaction.getTransactionType().name(),
+                    transaction.getAmount(),
+                    transaction.getBalance()))
+                .collect(Collectors.toList());
 
             return new AccountReportDTO(
-                    account.getId(),
-                    account.getAccountNumber(),
-                    account.getInitialBalance(),
-                    transactionReportDTOS);
+                account.getId(),
+                account.getAccountNumber(),
+                account.getInitialBalance(),
+                transactionReportDTOS);
         }).collect(Collectors.toList());
 
         return new AccountStatementReportDTO(customerId, accountReportDTOS);
