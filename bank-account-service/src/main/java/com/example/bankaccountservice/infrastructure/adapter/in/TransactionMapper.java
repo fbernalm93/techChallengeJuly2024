@@ -1,4 +1,4 @@
-package com.example.bankaccountservice.infrastructure.mapper;
+package com.example.bankaccountservice.infrastructure.adapter.in;
 
 import com.example.bankaccountservice.domain.model.Transaction;
 import com.example.bankaccountservice.infrastructure.entity.TransactionEntity;

@@ -3,7 +3,7 @@ package com.example.bankaccountservice.infrastructure.adapter.out;
 import com.example.bankaccountservice.domain.model.Account;
 import com.example.bankaccountservice.domain.repository.AccountRepository;
 import com.example.bankaccountservice.infrastructure.entity.AccountEntity;
-import com.example.bankaccountservice.infrastructure.mapper.AccountMapper;
+import com.example.bankaccountservice.infrastructure.adapter.in.AccountMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -53,4 +53,11 @@ public class JpaAccountRepository implements AccountRepository {
             .map(accountMapper::toDomain)
             .collect(Collectors.toList());
     }
+
+    @Override
+    public void deleteAll() {
+        springDataAccountRepository.deleteAll();
+    }
+
+
 }

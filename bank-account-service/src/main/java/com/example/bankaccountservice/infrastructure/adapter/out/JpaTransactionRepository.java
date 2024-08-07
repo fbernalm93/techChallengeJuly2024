@@ -3,7 +3,7 @@ package com.example.bankaccountservice.infrastructure.adapter.out;
 import com.example.bankaccountservice.domain.model.Transaction;
 import com.example.bankaccountservice.domain.repository.TransactionRepository;
 import com.example.bankaccountservice.infrastructure.entity.TransactionEntity;
-import com.example.bankaccountservice.infrastructure.mapper.TransactionMapper;
+import com.example.bankaccountservice.infrastructure.adapter.in.TransactionMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -44,5 +44,9 @@ public class JpaTransactionRepository implements TransactionRepository {
     @Override
     public void deleteById(Long id) {
         springDataTransactionRepository.deleteById(id);
+    }
+
+    public void deleteAll() {
+        springDataTransactionRepository.deleteAll();
     }
 }

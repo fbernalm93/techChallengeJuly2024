@@ -1,6 +1,5 @@
 package com.example.bankaccountservice.domain.repository;
 
-import com.example.bankaccountservice.application.dto.CustomerDTO;
 import com.example.bankaccountservice.domain.model.Account;
 
 import java.util.List;
@@ -12,4 +11,5 @@ public interface AccountRepository {
     Account save(Account account);
     void deleteById(Long id);
     List<Account> findByCustomerId(String customerId);
+    void deleteAll();
 }
